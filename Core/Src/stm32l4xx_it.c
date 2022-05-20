@@ -219,9 +219,16 @@ void SDMMC1_IRQHandler(void)
 void DMA2_Channel4_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA2_Channel4_IRQn 0 */
-
+  if ((hsd1.Context == (SD_CONTEXT_DMA | SD_CONTEXT_READ_SINGLE_BLOCK)) || (hsd1.Context == (SD_CONTEXT_DMA | SD_CONTEXT_READ_MULTIPLE_BLOCK)))
+  {
+    HAL_DMA_IRQHandler(hsd1.hdmarx);
+  }
+  else if ((hsd1.Context == (SD_CONTEXT_DMA | SD_CONTEXT_WRITE_SINGLE_BLOCK)) || (hsd1.Context == (SD_CONTEXT_DMA | SD_CONTEXT_WRITE_MULTIPLE_BLOCK)))
+  {
+    HAL_DMA_IRQHandler(hsd1.hdmatx);
+  }
   /* USER CODE END DMA2_Channel4_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_sdmmc1_rx);
+  //HAL_DMA_IRQHandler(&hdma_sdmmc1_rx);
   /* USER CODE BEGIN DMA2_Channel4_IRQn 1 */
 
   /* USER CODE END DMA2_Channel4_IRQn 1 */

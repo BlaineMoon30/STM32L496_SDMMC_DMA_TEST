@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
  SD_HandleTypeDef hsd1;
-DMA_HandleTypeDef hdma_sdmmc1_rx;
+//DMA_HandleTypeDef hdma_sdmmc1_rx;
 
 /* USER CODE BEGIN PV */
 
@@ -58,7 +58,67 @@ static void MX_SDMMC1_SD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+FIL MyFile;     /* File object */
+uint8_t workBuffer[_MAX_SS];
+void FATFS_Test(void)
+{
+  FRESULT res = FR_OK; /* FatFs function common result code */
+  uint32_t byteswritten, bytesread; /* File write/read counts */
+  uint8_t wtext[] = "stm32l496g_discovery : Test..."; /* File write buffer */
+  uint8_t rtext[100]; /* File read buffer */
 
+  /* Register the file system object to the FatFs module */
+  if (f_mount(&SDFatFS, (TCHAR const*)SDPath, 0) == FR_OK)
+  {
+    res = f_mkfs(SDPath, FM_ANY, 0, workBuffer, sizeof(workBuffer));
+
+    if (res != FR_OK)
+    {
+      Error_Handler();
+      while (1);
+    }
+
+    /* Create and Open a new text file object with write access */
+    if (f_open(&MyFile, "STM32_.TXT", FA_CREATE_ALWAYS | FA_WRITE) == FR_OK)
+    {
+      /* Write data to the text file */
+      res = f_write(&MyFile, wtext, sizeof(wtext), (void*)&byteswritten);
+
+      if ((byteswritten > 0) && (res == FR_OK))
+      {
+        /* Close the open text file */
+        f_close(&MyFile);
+
+        /* Open the text file object with read access */
+        if (f_open(&MyFile, "STM32_.TXT", FA_READ) == FR_OK)
+        {
+          /* Read data from the text file */
+          res = f_read(&MyFile, rtext, sizeof(rtext), (void*)&bytesread);
+
+          if ((bytesread > 0) && (res == FR_OK))
+          {
+            /* Close the open text file */
+            f_close(&MyFile);
+
+            /* Compare read data with the expected data */
+            if ((bytesread == byteswritten))
+            {
+              /* Success of the demo: no error occurrence */
+              return;
+            }
+          }
+        }
+      }
+    }else{
+      Error_Handler();
+    }
+  }
+  else
+  {
+    /* Error */
+    Error_Handler();
+  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -93,7 +153,7 @@ int main(void)
   MX_SDMMC1_SD_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
-
+  FATFS_Test();
   /* USER CODE END 2 */
 
   /* Infinite loop */

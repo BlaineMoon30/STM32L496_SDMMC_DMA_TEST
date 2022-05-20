@@ -136,7 +136,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF12_SDMMC1;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
+#if 0
     /* SDMMC1 DMA Init */
     /* SDMMC1_RX Init */
     hdma_sdmmc1_rx.Instance = DMA2_Channel4;
@@ -154,7 +154,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
     }
 
     __HAL_LINKDMA(hsd,hdmarx,hdma_sdmmc1_rx);
-
+#endif
     /* SDMMC1 interrupt Init */
     HAL_NVIC_SetPriority(SDMMC1_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(SDMMC1_IRQn);
